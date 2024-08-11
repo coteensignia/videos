@@ -1,71 +1,62 @@
-// para gestionar la actualización de los videos
-const IIFE = (() => {
-  //  establecer el atributo 'src' del elemento con el id dado
-  const updateVideoSource = (videoUrl, elementId) => {
+// Módulo para gestionar la actualización de videos
+const videoManager = (() => {
+  // Función para actualizar la fuente del video
+  const updateVideo = (elementId, videoUrl) => {
     document.getElementById(elementId).setAttribute("src", videoUrl);
   };
 
-  //  accesible desde fuera
-  return { updateVideoSource };
+  // Exponer la función correcta
+  return { updateVideo };
 })();
 
-// Clase base 'Multimedia' 
+// Clase 'Multimedia' que representa una fuente de multimedia
 class Multimedia {
-  #url; // Propiedad privada
+  #url; // Propiedad privada para almacenar la URL
 
-  // Constructor que inicializa la URL del video
   constructor(videoUrl) {
     this.#url = videoUrl;
   }
 
-  // Getter 
   get url() {
     return this.#url;
   }
 
-  // Método que proporciona un mensaje
   setStartTime() {
     return 'Este método es para realizar un cambio en la URL del video';
   }
 }
 
-// Clase 'Reproductor' que extiende de 'Multimedia'
+// Clase 'Reproductor' que extiende 'Multimedia' para gestionar la reproducción de videos
 class Reproductor extends Multimedia {
-  #id; // Propiedad privada 
+  #elementId; // Propiedad privada para almacenar el id del elemento
 
-  // Constructor que inicializa la URL del video 
   constructor(videoUrl, elementId) {
-    super(videoUrl); // Llama al constructor de la clase base Multimedia
-    this.#id = elementId;
+    super(videoUrl);
+    this.#elementId = elementId;
   }
 
-  // Método para reproducir el multimedia actual
-  playMultimedia() {
-    IIFE.updateVideoSource(this.url, this.#id);
+  play() {
+    videoManager.updateVideo(this.#elementId, this.url);
   }
 
-  // Método para establecer el tiempo de inicio del video
   setStartTime(seconds) {
-    
     const separator = this.url.includes('?') ? '&' : '?';
-    // Segundo especificado
     const updatedUrl = `${this.url}${separator}start=${seconds}`;
-
-    IIFE.updateVideoSource(updatedUrl, this.#id);
+    videoManager.updateVideo(this.#elementId, updatedUrl);
   }
 }
 
-// Crear instancias de 'Reproductor'
+// Instanciar objetos 'Reproductor' para diferentes tipos de contenido
 const seriesPlayer = new Reproductor("https://www.youtube.com/embed/IEEbUzffzrk", "series");
 const moviePlayer = new Reproductor("https://www.youtube.com/embed/3QXOb5rLu9w", "peliculas");
 const musicPlayer = new Reproductor("https://www.youtube.com/embed/sGhglMmxwJ8", "musica");
 
-// Reproducir los videos 
-musicPlayer.playMultimedia();
-moviePlayer.playMultimedia();
-seriesPlayer.playMultimedia();
+// Iniciar la reproducción de los videos
+musicPlayer.play();
+moviePlayer.play();
+seriesPlayer.play();
 
-// Establecer el tiempo de inicio
+// Configurar los tiempos de inicio de los videos
 moviePlayer.setStartTime(20);
 seriesPlayer.setStartTime(10);
 musicPlayer.setStartTime(30);
